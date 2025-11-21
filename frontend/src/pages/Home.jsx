@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import ChatHistory from '../components/ChatHistory';
 import Chat from '../components/Chat';
 
-const Home = () => {
+const Home = ({ isVisitor = false }) => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
@@ -36,25 +36,27 @@ const Home = () => {
 
   return (
     <div className="home-container flex h-screen bg-gray-50">
-      {/* Sidebar - Chat History */}
-      <div className={`transition-all duration-300 ${isSidebarCollapsed ? 'w-0' : 'w-80'} bg-[#012e58]`}>
-        <ChatHistory 
-          isCollapsed={isSidebarCollapsed} 
-          onToggle={toggleSidebar}
-          user={user}
-          onLogout={handleLogout}
-          onSelectChat={handleSelectChat}
-          onNewChat={handleNewChat}
-          activeChatId={currentChatId}
-          key={refreshHistory}
-        />
-      </div>
+      {/* Sidebar - Chat History (hidden for visitors) */}
+      {!isVisitor && (
+        <div className={`transition-all duration-300 ${isSidebarCollapsed ? 'w-0' : 'w-80'} bg-[#012e58]`}>
+          <ChatHistory 
+            isCollapsed={isSidebarCollapsed} 
+            onToggle={toggleSidebar}
+            user={user}
+            onLogout={handleLogout}
+            onSelectChat={handleSelectChat}
+            onNewChat={handleNewChat}
+            activeChatId={currentChatId}
+            key={refreshHistory}
+          />
+        </div>
+      )}
 
       {/* Main Chat Area */}
       <div className="flex-1 flex flex-col">
         {/* Header */}
         <header className="bg-white border-b border-gray-200 p-4 flex items-center justify-between">
-          {isSidebarCollapsed && (
+          {!isVisitor && isSidebarCollapsed && (
             <button
               onClick={toggleSidebar}
               className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
@@ -66,7 +68,25 @@ const Home = () => {
           )}
           <h1 className="text-xl font-semibold text-[#012e58]">ChatAOUra</h1>
           <div className="flex items-center space-x-4">
-            <span className="text-sm text-gray-600">Hello, {user?.email}</span>
+            {isVisitor ? (
+              <>
+                <span className="text-sm text-gray-600">Visitor Mode</span>
+                <button
+                  onClick={() => navigate('/register')}
+                  className="px-4 py-2 bg-[#012e58] text-white rounded-lg hover:bg-[#1a4b7a] transition-colors text-sm"
+                >
+                  Sign Up
+                </button>
+                <button
+                  onClick={() => navigate('/')}
+                  className="px-4 py-2 border border-[#012e58] text-[#012e58] rounded-lg hover:bg-gray-50 transition-colors text-sm"
+                >
+                  Login
+                </button>
+              </>
+            ) : (
+              <span className="text-sm text-gray-600">Hello, {user?.name}</span>
+            )}
           </div>
         </header>
 
@@ -75,6 +95,7 @@ const Home = () => {
           <Chat 
             currentChatId={currentChatId}
             onChatCreated={handleChatCreated}
+            isVisitor={isVisitor}
           />
         </div>
       </div>

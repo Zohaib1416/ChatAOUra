@@ -71,13 +71,14 @@ const formatBotMessage = (content) => {
   });
 };
 
-const Chat = ({ currentChatId, onChatCreated }) => {
+const Chat = ({ currentChatId, onChatCreated, isVisitor = false }) => {
   const [messages, setMessages] = useState([
     {
       id: 1,
       type: 'bot',
       content: "Hello! I'm ChatAOUra, your AI assistant for Arab Open University Bahrain. How can I help you today?",
-      timestamp: new Date()
+      timestamp: new Date(),
+      isComplete: true
     }
   ]);
   const [inputValue, setInputValue] = useState('');
@@ -85,6 +86,7 @@ const Chat = ({ currentChatId, onChatCreated }) => {
   const [conversationHistory, setConversationHistory] = useState([]);
   const [chatId, setChatId] = useState(currentChatId);
   const messagesEndRef = useRef(null);
+  const streamingIntervalRef = useRef(null);
 
   // Auto-scroll to bottom when new messages arrive
   const scrollToBottom = () => {
@@ -94,6 +96,15 @@ const Chat = ({ currentChatId, onChatCreated }) => {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  // Cleanup streaming interval on unmount
+  useEffect(() => {
+    return () => {
+      if (streamingIntervalRef.current) {
+        clearInterval(streamingIntervalRef.current);
+      }
+    };
+  }, []);
 
   // Load chat when currentChatId changes
   useEffect(() => {
@@ -106,7 +117,8 @@ const Chat = ({ currentChatId, onChatCreated }) => {
           id: 1,
           type: 'bot',
           content: "Hello! I'm ChatAOUra, your AI assistant for Arab Open University Bahrain. How can I help you today?",
-          timestamp: new Date()
+          timestamp: new Date(),
+          isComplete: true
         }
       ]);
       setConversationHistory([]);
@@ -126,13 +138,15 @@ const Chat = ({ currentChatId, onChatCreated }) => {
             id: 0,
             type: 'bot',
             content: "Hello! I'm ChatAOUra, your AI assistant for Arab Open University Bahrain. How can I help you today?",
-            timestamp: new Date(chat.createdAt)
+            timestamp: new Date(chat.createdAt),
+            isComplete: true
           },
           ...chat.messages.map((msg, index) => ({
             id: index + 1,
             type: msg.role === 'user' ? 'user' : 'bot',
             content: msg.content,
-            timestamp: new Date(msg.timestamp)
+            timestamp: new Date(msg.timestamp),
+            isComplete: true
           }))
         ];
         
@@ -155,6 +169,50 @@ const Chat = ({ currentChatId, onChatCreated }) => {
     await sendMessageContent(question);
   };
 
+  const animateBotResponse = (messageId, fullContent, newChatId, newTitle) => {
+    let currentIndex = 0;
+    const charsPerInterval = 3; // Characters to add per interval for faster animation
+    
+    // Clear any existing interval
+    if (streamingIntervalRef.current) {
+      clearInterval(streamingIntervalRef.current);
+    }
+
+    streamingIntervalRef.current = setInterval(() => {
+      currentIndex += charsPerInterval;
+      
+      if (currentIndex >= fullContent.length) {
+        // Animation complete
+        clearInterval(streamingIntervalRef.current);
+        setMessages(prev => 
+          prev.map(msg => 
+            msg.id === messageId 
+              ? { ...msg, content: fullContent, isComplete: true }
+              : msg
+          )
+        );
+        
+        // Update chat ID if this is a new chat
+        if (!chatId && newChatId) {
+          setChatId(newChatId);
+          if (onChatCreated) {
+            onChatCreated(newChatId, newTitle);
+          }
+        }
+      } else {
+        // Update partial content
+        const partialContent = fullContent.substring(0, currentIndex);
+        setMessages(prev => 
+          prev.map(msg => 
+            msg.id === messageId 
+              ? { ...msg, content: partialContent, isComplete: false }
+              : msg
+          )
+        );
+      }
+    }, 20); // 20ms interval for smooth animation
+  };
+
   const sendMessageContent = async (messageContent) => {
     if (!messageContent.trim() || isTyping) return;
 
@@ -165,7 +223,8 @@ const Chat = ({ currentChatId, onChatCreated }) => {
       id: Date.now(),
       type: 'user',
       content: userMessageContent,
-      timestamp: new Date()
+      timestamp: new Date(),
+      isComplete: true
     };
 
     setMessages(prev => [...prev, userMessage]);
@@ -173,38 +232,45 @@ const Chat = ({ currentChatId, onChatCreated }) => {
     setIsTyping(true);
 
     try {
-      // Call the backend API
-      const response = await sendMessage(userMessageContent, conversationHistory, chatId);
+      // Call the backend API (visitors pass null for chatId to prevent DB storage)
+      const response = await sendMessage(userMessageContent, conversationHistory, isVisitor ? null : chatId);
 
       if (response.success) {
-        // Add bot response
+        // Hide typing indicator before showing message
+        setIsTyping(false);
+        
+        // Add bot response with empty content initially
+        const botMessageId = Date.now() + 1;
         const botMessage = {
-          id: Date.now() + 1,
+          id: botMessageId,
           type: 'bot',
-          content: response.data.message,
-          timestamp: new Date()
+          content: '',
+          timestamp: new Date(),
+          isComplete: false
         };
         setMessages(prev => [...prev, botMessage]);
         
         // Update conversation history for context
         setConversationHistory(response.data.conversationHistory || []);
         
-        // Update chat ID if this is a new chat
-        if (!chatId && response.data.chatId) {
-          setChatId(response.data.chatId);
-          if (onChatCreated) {
-            onChatCreated(response.data.chatId, response.data.title);
-          }
-        }
+        // Start animated typing effect
+        animateBotResponse(
+          botMessageId, 
+          response.data.message,
+          isVisitor ? null : response.data.chatId,
+          response.data.title
+        );
       } else {
         // Handle error
         const errorMessage = {
           id: Date.now() + 1,
           type: 'bot',
           content: `Sorry, I encountered an error: ${response.error}. Please try again.`,
-          timestamp: new Date()
+          timestamp: new Date(),
+          isComplete: true
         };
         setMessages(prev => [...prev, errorMessage]);
+        setIsTyping(false);
       }
     } catch (error) {
       console.error('Error sending message:', error);
@@ -212,10 +278,10 @@ const Chat = ({ currentChatId, onChatCreated }) => {
         id: Date.now() + 1,
         type: 'bot',
         content: "Sorry, I'm having trouble connecting to the server. Please make sure the backend is running and try again.",
-        timestamp: new Date()
+        timestamp: new Date(),
+        isComplete: true
       };
       setMessages(prev => [...prev, errorMessage]);
-    } finally {
       setIsTyping(false);
     }
   };
@@ -242,6 +308,11 @@ const Chat = ({ currentChatId, onChatCreated }) => {
               <p className="text-gray-600 max-w-md">
                 Start a conversation with our AI assistant. Ask questions, get help, or just chat!
               </p>
+              {isVisitor && (
+                <p className="text-sm text-amber-600 mt-2">
+                  💡 You're in visitor mode. Chats won't be saved. Sign up to save your history!
+                </p>
+              )}
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl w-full">
               <div 
@@ -306,6 +377,10 @@ const Chat = ({ currentChatId, onChatCreated }) => {
                   }`}>
                     <div className="text-sm leading-relaxed whitespace-pre-wrap">
                       {message.type === 'bot' ? formatBotMessage(message.content) : message.content}
+                      {/* Show cursor for incomplete bot messages */}
+                      {message.type === 'bot' && !message.isComplete && (
+                        <span className="inline-block w-1 h-4 bg-[#012e58] ml-1 animate-pulse"></span>
+                      )}
                     </div>
                     <span className={`text-xs mt-2 block ${
                       message.type === 'user' ? 'text-blue-200' : 'text-gray-500'

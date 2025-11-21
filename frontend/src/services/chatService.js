@@ -13,14 +13,19 @@ const getAuthToken = () => {
 export const sendMessage = async (message, conversationHistory = [], chatId = null) => {
   try {
     const token = getAuthToken();
+    
+    // Prepare headers - only include Authorization if token exists (for logged-in users)
+    const headers = {};
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+    
     const response = await axios.post(`${API_URL}/chat`, {
       message,
       conversationHistory,
       chatId
     }, {
-      headers: {
-        'Authorization': `Bearer ${token}`
-      }
+      headers
     });
     
     return {

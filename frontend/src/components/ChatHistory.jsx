@@ -110,7 +110,7 @@ const ChatHistory = ({ isCollapsed, onToggle, user, onLogout, onSelectChat, onNe
       </div>
 
       {/* Chat List */}
-      <div className="flex-1 overflow-y-auto px-2 pb-2">
+      <div className="flex-1 overflow-y-auto px-2 pb-2 scrollbar-thin scrollbar-thumb-blue-600 scrollbar-track-blue-900/30 hover:scrollbar-thumb-blue-500">
         {loading ? (
           <div className="flex items-center justify-center py-8">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>

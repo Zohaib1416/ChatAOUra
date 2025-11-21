@@ -77,6 +77,12 @@ function App() {
             } 
           />
           
+          {/* Visitor route - chat without login */}
+          <Route 
+            path="/chat" 
+            element={<Home isVisitor={true} />} 
+          />
+          
           {/* Catch all route - redirect to landing */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

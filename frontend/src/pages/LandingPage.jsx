@@ -41,9 +41,26 @@ const LandingPage = () => {
               </p>
             </div>
 
-            <p className="text-lg text-gray-700 font-medium">
+            <p className="text-lg text-gray-700 font-medium mb-8">
               Guiding your AOU journey, the smart way.
             </p>
+
+            {/* Call to Action Buttons */}
+            <div className="flex flex-col sm:flex-row gap-4">
+              <Link
+                to="/chat"
+                className="px-8 py-4 bg-[#012e58] text-white font-semibold rounded-lg hover:bg-[#1a4b7a] transition-all duration-200 transform hover:scale-105 text-center flex items-center justify-center space-x-2"
+              >
+                <MessageCircle size={20} />
+                <span>Try as Visitor</span>
+              </Link>
+              <Link
+                to="/register"
+                className="px-8 py-4 border-2 border-[#012e58] text-[#012e58] font-semibold rounded-lg hover:bg-[#012e58] hover:text-white transition-all duration-200 transform hover:scale-105 text-center"
+              >
+                Sign Up Free
+              </Link>
+            </div>
           </div>
 
           {/* Right Content - Illustration */}

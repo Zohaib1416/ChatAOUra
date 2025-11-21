@@ -6,6 +6,7 @@ import chatbotLogo from '../assets/chatbotLogo.jpeg';
 
 const Register = () => {
   const [formData, setFormData] = useState({
+    name: '',
     email: '',
     password: '',
     confirmPassword: ''
@@ -37,10 +38,34 @@ const Register = () => {
   const validateForm = () => {
     const newErrors = {};
     
+    if (!formData.name.trim()) {
+      newErrors.name = 'Name is required';
+    } else if (formData.name.trim().length < 2) {
+      newErrors.name = 'Name must be at least 2 characters';
+    }
+    
     if (!formData.email.trim()) {
       newErrors.email = 'Email is required';
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = 'Please enter a valid email';
+    } else {
+      // AOU email format validation: 6XXXXXXCC@std.aou.org.cc
+      // Where: 6 = must start with 6, XXXXXX = 6 more digits (total 7 digits)
+      // CC = country code (BH, KW, SA, EG, OM), cc = lowercase country code
+      const aouEmailPattern = /^6\d{6}(BH|KW|SA|EG|OM)@std\.aou\.org\.(bh|kw|sa|eg|om)$/;
+      
+      if (!aouEmailPattern.test(formData.email)) {
+        newErrors.email = 'Invalid AOU email format. Example: 6210509BH@std.aou.org.bh';
+      } else {
+        // Check if country codes match
+        const match = formData.email.match(/^6\d{6}(BH|KW|SA|EG|OM)@std\.aou\.org\.(bh|kw|sa|eg|om)$/);
+        if (match) {
+          const upperCode = match[1]; // BH, KW, SA, EG, OM
+          const lowerCode = match[2]; // bh, kw, sa, eg, om
+          
+          if (upperCode.toLowerCase() !== lowerCode) {
+            newErrors.email = 'Country codes must match (e.g., BH with .bh, KW with .kw)';
+          }
+        }
+      }
     }
     
     if (!formData.password) {
@@ -67,7 +92,7 @@ const Register = () => {
     setIsSubmitting(true);
     
     try {
-      const result = await register(formData.email, formData.password);
+      const result = await register(formData.name, formData.email, formData.password);
       
       if (result.success) {
         navigate('/home');
@@ -104,7 +129,7 @@ const Register = () => {
               <img 
                 src={chatbotLogo} 
                 alt="ChatAOUra Logo" 
-                className="w-24 h-24 lg:w-32 lg:h-32 rounded-2xl shadow-2xl border-4 border-white/20 object-cover"
+                className="w-24 h-24 lg:w-32 lg:h-40 rounded-2xl shadow-2xl border-4 border-white/20 object-cover"
               />
             </div>
             <h1 className="text-3xl lg:text-4xl xl:text-5xl font-bold mb-4 leading-tight">
@@ -117,15 +142,15 @@ const Register = () => {
           </div>
           
           {/* Feature highlights */}
-          <div className="space-y-6 max-w-sm lg:max-w-md w-full">
+          <div className="space-y-6 max-w-sm lg:max-w-md w-full">    
             <div className="flex items-start space-x-4 text-left">
               <div className="bg-white/20 backdrop-blur-sm p-3 rounded-xl flex-shrink-0">
-                <Users size={24} />
+                <MessageCircle size={24} />
               </div>
               <div>
-                <h3 className="font-semibold text-lg mb-1">Connect with Peers</h3>
+                <h3 className="font-semibold text-lg mb-1">Instant AI Assistance</h3>
                 <p className="text-blue-100 text-sm leading-relaxed">
-                  Build lasting connections with fellow students across the university
+                  Get quick answers about courses, registration, exams, and academic policies 24/7
                 </p>
               </div>
             </div>
@@ -135,21 +160,21 @@ const Register = () => {
                 <BookOpen size={24} />
               </div>
               <div>
-                <h3 className="font-semibold text-lg mb-1">Academic Excellence</h3>
+                <h3 className="font-semibold text-lg mb-1">Save Your Conversations</h3>
                 <p className="text-blue-100 text-sm leading-relaxed">
-                  Share knowledge, collaborate on projects, and grow together
+                  Create an account to keep your chat history and access previous answers anytime
                 </p>
               </div>
             </div>
-            
+
             <div className="flex items-start space-x-4 text-left">
               <div className="bg-white/20 backdrop-blur-sm p-3 rounded-xl flex-shrink-0">
-                <MessageCircle size={24} />
+                <Users size={24} />
               </div>
               <div>
-                <h3 className="font-semibold text-lg mb-1">University Community</h3>
+                <h3 className="font-semibold text-lg mb-1">Personalized Experience</h3>
                 <p className="text-blue-100 text-sm leading-relaxed">
-                  Be part of the vibrant AOU family worldwide
+                  Manage multiple chats and get tailored information for your academic journey
                 </p>
               </div>
             </div>
@@ -185,6 +210,33 @@ const Register = () => {
 
             <form onSubmit={handleSubmit} className="space-y-6">
               <div>
+                <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
+                  Full Name
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <Users className="h-5 w-5 text-gray-400" />
+                  </div>
+                  <input
+                    type="text"
+                    id="name"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    className={`block w-full pl-10 pr-3 py-3 border rounded-lg focus:ring-2 focus:ring-[#012e58] focus:border-transparent transition-all duration-200 ${
+                      errors.name
+                        ? 'border-red-300 bg-red-50'
+                        : 'border-gray-300 bg-white hover:border-gray-400 focus:border-[#012e58]'
+                    }`}
+                    placeholder="Enter your full name"
+                  />
+                </div>
+                {errors.name && (
+                  <p className="mt-2 text-sm text-red-600">{errors.name}</p>
+                )}
+              </div>
+
+              <div>
                 <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
                   Email Address
                 </label>
@@ -203,7 +255,7 @@ const Register = () => {
                         ? 'border-red-300 bg-red-50'
                         : 'border-gray-300 bg-white hover:border-gray-400 focus:border-[#012e58]'
                     }`}
-                    placeholder="Enter your email"
+                    placeholder="e.g., 6210509BH@std.aou.org.bh"
                   />
                 </div>
                 {errors.email && (
