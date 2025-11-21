@@ -145,11 +145,20 @@ const Chat = ({ currentChatId, onChatCreated }) => {
     }
   };
 
-  const handleSendMessage = async (e) => {
-    e.preventDefault();
-    if (!inputValue.trim() || isTyping) return;
+  const handleSuggestedQuestion = async (question) => {
+    if (isTyping) return;
+    
+    // Set the input value and trigger send
+    setInputValue(question);
+    
+    // Send the message immediately
+    await sendMessageContent(question);
+  };
 
-    const userMessageContent = inputValue.trim();
+  const sendMessageContent = async (messageContent) => {
+    if (!messageContent.trim() || isTyping) return;
+
+    const userMessageContent = messageContent.trim();
 
     // Add user message
     const userMessage = {
@@ -211,6 +220,11 @@ const Chat = ({ currentChatId, onChatCreated }) => {
     }
   };
 
+  const handleSendMessage = async (e) => {
+    e.preventDefault();
+    await sendMessageContent(inputValue);
+  };
+
   return (
     <div className="h-full flex flex-col">
       {/* Messages Area */}
@@ -230,21 +244,33 @@ const Chat = ({ currentChatId, onChatCreated }) => {
               </p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl w-full">
-              <div className="p-4 border border-gray-200 rounded-lg hover:border-[#012e58] transition-colors cursor-pointer">
-                <h3 className="font-medium text-[#012e58] mb-2">💡 Get Ideas</h3>
-                <p className="text-sm text-gray-600">Ask for creative suggestions and brainstorming help</p>
+              <div 
+                onClick={() => handleSuggestedQuestion("When is a student placed on the 'expected to graduate students' list?")}
+                className="p-4 border border-gray-200 rounded-lg hover:border-[#012e58] hover:bg-gray-50 transition-colors cursor-pointer"
+              >
+                <h3 className="font-medium text-[#012e58] mb-2">🎓 Expected to Graduate</h3>
+                <p className="text-sm text-gray-600">When is a student placed on the 'expected to graduate students' list?</p>
               </div>
-              <div className="p-4 border border-gray-200 rounded-lg hover:border-[#012e58] transition-colors cursor-pointer">
-                <h3 className="font-medium text-[#012e58] mb-2">📚 Learn Something</h3>
-                <p className="text-sm text-gray-600">Get explanations and learn new concepts</p>
+              <div 
+                onClick={() => handleSuggestedQuestion("When is a student placed on the warned list?")}
+                className="p-4 border border-gray-200 rounded-lg hover:border-[#012e58] hover:bg-gray-50 transition-colors cursor-pointer"
+              >
+                <h3 className="font-medium text-[#012e58] mb-2">⚠️ Warned List</h3>
+                <p className="text-sm text-gray-600">When is a student placed on the warned list?</p>
               </div>
-              <div className="p-4 border border-gray-200 rounded-lg hover:border-[#012e58] transition-colors cursor-pointer">
-                <h3 className="font-medium text-[#012e58] mb-2">💻 Code Help</h3>
-                <p className="text-sm text-gray-600">Get assistance with programming and technical questions</p>
+              <div 
+                onClick={() => handleSuggestedQuestion("What are the steps to check my academic advisor?")}
+                className="p-4 border border-gray-200 rounded-lg hover:border-[#012e58] hover:bg-gray-50 transition-colors cursor-pointer"
+              >
+                <h3 className="font-medium text-[#012e58] mb-2">👨‍🏫 Academic Advisor</h3>
+                <p className="text-sm text-gray-600">What are the steps to check my academic advisor?</p>
               </div>
-              <div className="p-4 border border-gray-200 rounded-lg hover:border-[#012e58] transition-colors cursor-pointer">
-                <h3 className="font-medium text-[#012e58] mb-2">✍️ Write Content</h3>
-                <p className="text-sm text-gray-600">Help with writing, editing, and content creation</p>
+              <div 
+                onClick={() => handleSuggestedQuestion("How can I calculate my GPA?")}
+                className="p-4 border border-gray-200 rounded-lg hover:border-[#012e58] hover:bg-gray-50 transition-colors cursor-pointer"
+              >
+                <h3 className="font-medium text-[#012e58] mb-2">📊 GPA Calculation</h3>
+                <p className="text-sm text-gray-600">How can I calculate my GPA?</p>
               </div>
             </div>
           </div>
