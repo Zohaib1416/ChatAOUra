@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Mail, Lock, Eye, EyeOff, Users, BookOpen, MessageCircle } from 'lucide-react';
+import { Mail, Lock, Eye, EyeOff, Users, BookOpen, MessageCircle, ArrowLeft } from 'lucide-react';
 import chatbotLogo from '../assets/chatbotLogo.jpeg';
 
 const Register = () => {
@@ -18,6 +18,21 @@ const Register = () => {
   
   const { register } = useAuth();
   const navigate = useNavigate();
+
+  // Hide scrollbar on mount
+  useEffect(() => {
+    // Create and inject style to hide scrollbar
+    const style = document.createElement('style');
+    style.textContent = `
+      html::-webkit-scrollbar { display: none; }
+      body { -ms-overflow-style: none; scrollbar-width: none; }
+    `;
+    document.head.appendChild(style);
+    
+    return () => {
+      document.head.removeChild(style);
+    };
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -355,16 +370,27 @@ const Register = () => {
               </button>
             </form>
 
-            <div className="mt-8 text-center">
-              <p className="text-gray-600">
-                Already have an account?{' '}
+            <div className="mt-8 space-y-4">
+              <div className="text-center">
+                <p className="text-gray-600">
+                  Already have an account?{' '}
+                  <Link
+                    to="/login"
+                    className="text-[#012e58] hover:text-[#1a4b7a] font-semibold transition-colors hover:underline"
+                  >
+                    Sign In
+                  </Link>
+                </p>
+              </div>
+              <div className="text-center">
                 <Link
-                  to="/login"
-                  className="text-[#012e58] hover:text-[#1a4b7a] font-semibold transition-colors hover:underline"
+                  to="/"
+                  className="inline-flex items-center space-x-2 px-4 py-2 border-2 border-[#012e58] text-[#012e58] font-semibold rounded-lg hover:bg-[#012e58] hover:text-white transition-colors text-sm"
                 >
-                  Sign In
+                  <ArrowLeft size={16} />
+                  <span>Back to Home</span>
                 </Link>
-              </p>
+              </div>
             </div>
           </div>
         </div>

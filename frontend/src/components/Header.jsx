@@ -15,7 +15,7 @@ const Header = () => {
 
   return (
     <>
-      <header className="bg-white shadow-sm border-b border-gray-100">
+      <header className="fixed top-0 left-0 right-0 bg-white shadow-sm border-b border-gray-100 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-20">
             {/* Logo */}
@@ -30,6 +30,9 @@ const Header = () => {
 
             {/* Auth Buttons */}
             <div className="hidden md:flex items-center space-x-4">
+              <Link to="/about" className="px-4 py-2 text-gray-700 hover:text-[#012e58] transition-colors font-medium border border-gray-300 rounded-lg hover:border-[#012e58]">About</Link>
+              <Link to="/contact" className="px-4 py-2 text-gray-700 hover:text-[#012e58] transition-colors font-medium border border-gray-300 rounded-lg hover:border-[#012e58]">Contact</Link>
+              <Link to="/faq" className="px-4 py-2 text-gray-700 hover:text-[#012e58] transition-colors font-medium border border-gray-300 rounded-lg hover:border-[#012e58]">FAQ</Link>
               <button 
                 onClick={handleLoginClick}
                 className="px-4 py-2 text-[#012e58] hover:text-[#1a4b7a] transition-colors border border-[#012e58] rounded-lg hover:bg-[#012e58] hover:text-white"
@@ -59,10 +62,9 @@ const Header = () => {
           {isMenuOpen && (
             <div className="md:hidden py-4 border-t border-gray-100">
               <div className="flex flex-col space-y-4">
-                <Link to="/" className="text-gray-700 hover:text-[#012e58] transition-colors">Home</Link>
-                <a href="#about" className="text-gray-700 hover:text-[#012e58] transition-colors">About AOU</a>
-                <a href="#features" className="text-gray-700 hover:text-[#012e58] transition-colors">Features</a>
-                <a href="#contact" className="text-gray-700 hover:text-[#012e58] transition-colors">Contact</a>
+                <Link to="/about" className="px-4 py-2 text-gray-700 hover:text-[#012e58] transition-colors text-sm font-medium border border-gray-300 rounded-lg hover:border-[#012e58]">About</Link>
+                <Link to="/contact" className="px-4 py-2 text-gray-700 hover:text-[#012e58] transition-colors text-sm font-medium border border-gray-300 rounded-lg hover:border-[#012e58]">Contact</Link>
+                <Link to="/faq" className="px-4 py-2 text-gray-700 hover:text-[#012e58] transition-colors text-sm font-medium border border-gray-300 rounded-lg hover:border-[#012e58]">FAQ</Link>
                 <div className="flex flex-col space-y-2 pt-4 border-t border-gray-100">
                   <button 
                     onClick={handleLoginClick}

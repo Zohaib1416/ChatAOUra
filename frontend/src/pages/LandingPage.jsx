@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Header from '../components/Header';
+import Footer from '../components/Footer';
 import { MessageCircle, Clock, Users, BookOpen, GraduationCap, Award, Globe, Zap } from 'lucide-react';
 
 const LandingPage = () => {
@@ -13,50 +14,50 @@ const LandingPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white flex flex-col">
       <Header />
       
       {/* Hero Section */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col lg:flex-row items-center justify-between py-12 lg:py-20">
+      <main className="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full pt-20 pb-8">
+        <div className="flex flex-col lg:flex-row items-center justify-between py-6 md:py-12 lg:py-20 gap-8 md:gap-12">
           {/* Left Content */}
-          <div className="lg:w-1/2 mb-12 lg:mb-0">
-            <h1 className="text-4xl lg:text-6xl font-bold text-[#012e58] leading-tight mb-6">
+          <div className="lg:w-1/2 mb-8 lg:mb-0">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-[#012e58] leading-tight mb-4 md:mb-6">
               ChatBot for AOU
             </h1>
-            <h2 className="text-2xl lg:text-4xl font-semibold text-gray-800 mb-8">
-              Talk smart, stay ahead —<br />
+            <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-semibold text-gray-800 mb-6 md:mb-8">
+              Talk smart, stay ahead —<br className="hidden sm:block" />
               with ChatAOUra
             </h2>
             
-            <div className="space-y-4 mb-8">
-              <p className="text-lg text-gray-700">
+            <div className="space-y-3 md:space-y-4 mb-6 md:mb-8">
+              <p className="text-base sm:text-lg text-gray-700">
                 One chat, all your student affairs sorted.
               </p>
-              <p className="text-lg text-gray-700">
+              <p className="text-base sm:text-lg text-gray-700">
                 No queues. No wait. Just answers.
               </p>
-              <p className="text-lg text-gray-700 font-medium">
+              <p className="text-base sm:text-lg text-gray-700 font-medium">
                 Ask it. Solve it. ChatAOUra's got you.
               </p>
             </div>
 
-            <p className="text-lg text-gray-700 font-medium mb-8">
+            <p className="text-base sm:text-lg text-gray-700 font-medium mb-6 md:mb-8">
               Guiding your AOU journey, the smart way.
             </p>
 
             {/* Call to Action Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex flex-col sm:flex-row gap-3 md:gap-4">
               <Link
                 to="/chat"
-                className="px-8 py-4 bg-[#012e58] text-white font-semibold rounded-lg hover:bg-[#1a4b7a] transition-all duration-200 transform hover:scale-105 text-center flex items-center justify-center space-x-2"
+                className="px-6 md:px-8 py-3 md:py-4 bg-[#012e58] text-white font-semibold rounded-lg hover:bg-[#1a4b7a] transition-all duration-200 transform hover:scale-105 text-center flex items-center justify-center space-x-2 text-sm md:text-base"
               >
                 <MessageCircle size={20} />
                 <span>Try as Visitor</span>
               </Link>
               <Link
                 to="/register"
-                className="px-8 py-4 border-2 border-[#012e58] text-[#012e58] font-semibold rounded-lg hover:bg-[#012e58] hover:text-white transition-all duration-200 transform hover:scale-105 text-center"
+                className="px-6 md:px-8 py-3 md:py-4 border-2 border-[#012e58] text-[#012e58] font-semibold rounded-lg hover:bg-[#012e58] hover:text-white transition-all duration-200 transform hover:scale-105 text-center text-sm md:text-base"
               >
                 Sign Up Free
               </Link>
@@ -64,8 +65,8 @@ const LandingPage = () => {
           </div>
 
           {/* Right Content - Illustration */}
-          <div className="lg:w-1/2 flex justify-center items-center">
-            <div className="relative">
+          <div className="lg:w-1/2 flex justify-center items-center w-full">
+            <div className="relative w-full max-w-md lg:max-w-none">
               {/* Main Chat Bubbles */}
               <div className="flex items-center space-x-4">
                 {/* Chat Bubble 1 */}
@@ -127,6 +128,8 @@ const LandingPage = () => {
           </div>
         </div>
       </main>
+
+      <Footer />
     </div>
   );
 };

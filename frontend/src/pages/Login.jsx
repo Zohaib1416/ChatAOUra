@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Mail, Lock, Eye, EyeOff, Users, BookOpen, MessageCircle } from 'lucide-react';
+import { Mail, Lock, Eye, EyeOff, Users, BookOpen, MessageCircle, ArrowLeft } from 'lucide-react';
 import chatbotLogo from '../assets/chatbotLogo.jpeg';
 
 const Login = () => {
@@ -15,6 +15,21 @@ const Login = () => {
   
   const { login } = useAuth();
   const navigate = useNavigate();
+
+  // Hide scrollbar on mount
+  useEffect(() => {
+    // Create and inject style to hide scrollbar
+    const style = document.createElement('style');
+    style.textContent = `
+      html::-webkit-scrollbar { display: none; }
+      body { -ms-overflow-style: none; scrollbar-width: none; }
+    `;
+    document.head.appendChild(style);
+    
+    return () => {
+      document.head.removeChild(style);
+    };
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -151,13 +166,13 @@ const Login = () => {
 
       {/* Right Side - Login Form */}
       <div className="w-full lg:w-1/2 flex items-center justify-center p-6 lg:p-8 bg-gray-50 min-h-screen">
-        <div className="max-w-md w-full space-y-6">
+        <div className="max-w-lg w-full space-y-6">
           {/* Mobile Logo */}
           <div className="lg:hidden text-center mb-8">
             <img 
               src={chatbotLogo} 
               alt="ChatAOUra Logo" 
-              className="w-20 h-20 mx-auto mb-4 rounded-xl shadow-lg object-cover"
+              className="w-24 h-24 mx-auto mb-4 rounded-xl shadow-lg object-cover"
             />
             <h2 className="text-3xl font-bold text-[#012e58]">ChatAOUra</h2>
             <p className="text-gray-600 mt-2">Arab Open University</p>
@@ -257,16 +272,27 @@ const Login = () => {
               </button>
             </form>
 
-            <div className="mt-8 text-center">
-              <p className="text-gray-600">
-                Don't have an account?{' '}
+            <div className="mt-8 space-y-4">
+              <div className="text-center">
+                <p className="text-gray-600">
+                  Don't have an account?{' '}
+                  <Link
+                    to="/register"
+                    className="text-[#012e58] hover:text-[#1a4b7a] font-semibold transition-colors hover:underline"
+                  >
+                    Create Account
+                  </Link>
+                </p>
+              </div>
+              <div className="text-center">
                 <Link
-                  to="/register"
-                  className="text-[#012e58] hover:text-[#1a4b7a] font-semibold transition-colors hover:underline"
+                  to="/"
+                  className="inline-flex items-center space-x-2 px-4 py-2 border-2 border-[#012e58] text-[#012e58] font-semibold rounded-lg hover:bg-[#012e58] hover:text-white transition-colors text-sm"
                 >
-                  Create Account
+                  <ArrowLeft size={16} />
+                  <span>Back to Home</span>
                 </Link>
-              </p>
+              </div>
             </div>
           </div>
         </div>
